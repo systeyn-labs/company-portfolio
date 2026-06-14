@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.className} h-full antialiased`}>
       <body className="">
-        <Navbar />
+        {/* <Navbar /> */}
         <main id="main-content" tabIndex={-1}>
           {children}
         </main>

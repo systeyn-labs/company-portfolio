@@ -1,327 +1,206 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import CapabilitiesMatrix, { SERVICES } from "./CapabilitiesMatrix";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+// Crucial step: Register ScrollTrigger plugin for exit animations
+gsap.registerPlugin(ScrollTrigger);
 
-interface FloorLine {
-  xStart: number;
-  xEnd: number;
-  zStart: number;
-  zEnd: number;
-  type: "primary" | "accent" | "rail";
-}
-
-interface CircuitNode {
-  x: number;
-  z: number;
-  size: number;
-  pulsePhase: number;
-}
-
-interface DataPacket {
-  lineIndex: number;
-  zPos: number;
-  speed: number;
-  length: number;
-}
-
-export default function PageLayout() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pinSectionRef = useRef<HTMLDivElement>(null);
-  
-  const heroWrapperRef = useRef<HTMLDivElement>(null);
-  const finaleWrapperRef = useRef<HTMLDivElement>(null);
-  const heroTitleRef = useRef<HTMLHeadingElement>(null);
-  const serviceItemsRef = useRef<HTMLDivElement[]>([]);
-
-  const rawTitle = "Engineering Intelligent Systems.";
-  const words = rawTitle.split(" ");
+export default function DeployHero() {
+  const containerRef = useRef<HTMLElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  const topLinesRef = useRef<HTMLDivElement>(null);
+  const bottomLinesRef = useRef<HTMLDivElement>(null);
+  const leftGlowRef = useRef<HTMLDivElement>(null);
+  const rightGlowRef = useRef<HTMLDivElement>(null);
+  const sideOutlinesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const ctx = gsap.context(() => {
+      // 1. MASTER TIMELINE FOR ENTRANCE
+      const tlIntro = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-    let animationFrameId: number;
-    const dpr = window.devicePixelRatio || 1;
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+      // Ambient Glow Intro
+      tlIntro.fromTo(
+        [leftGlowRef.current, rightGlowRef.current],
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 1.8, stagger: 0.15, ease: "power2.out" }
+      );
 
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.scale(dpr, dpr);
+      // Top and Bottom vertical accent lines slide/scale reveal
+      tlIntro.fromTo(
+        topLinesRef.current,
+        { scaleY: 0, transformOrigin: "top center" },
+        { scaleY: 1, duration: 1, ease: "power3.inOut" },
+        "-=1.4"
+      );
 
-    const gridLines: FloorLine[] = [];
-    const embeddedNodes: CircuitNode[] = [];
-    const activePackets: DataPacket[] = [];
+      tlIntro.fromTo(
+        bottomLinesRef.current,
+        { scaleY: 0, transformOrigin: "bottom center" },
+        { scaleY: 1, duration: 1, ease: "power3.inOut" },
+        "-=1.0"
+      );
 
-    const numLongitudinalLines = 36;
-    for (let i = 0; i <= numLongitudinalLines; i++) {
-      const pct = i / numLongitudinalLines;
-      const xCoord = (pct - 0.5) * 3200; 
-      
-      let lineType: "primary" | "accent" | "rail" = "rail";
-      if (i % 6 === 0) lineType = "primary";
-      else if (i % 2 === 0) lineType = "accent";
+      // Typography Stagger
+      tlIntro.fromTo(
+        badgeRef.current,
+        { y: -15, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7 },
+        "-=0.5"
+      )
+      .fromTo(
+        headingRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9 },
+        "-=0.6"
+      )
+      .fromTo(
+        descRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8 },
+        "-=0.7"
+      )
+      .fromTo(
+        buttonsRef.current,
+        { y: 15, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8 },
+        "-=0.7"
+      );
 
-      gridLines.push({
-        xStart: xCoord,
-        xEnd: xCoord,
-        zStart: 10,
-        zEnd: 2400,
-        type: lineType,
+      // 2. CONTINUOUS AMBIENT IDLE PULSE
+      gsap.to(leftGlowRef.current, {
+        opacity: 0.85,
+        scale: 1.06,
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
       });
-    }
-
-    for (let j = 0; j < 60; j++) {
-      embeddedNodes.push({
-        x: (Math.random() - 0.5) * 2400,
-        z: 100 + Math.random() * 2200,
-        size: 1.0 + Math.random() * 2.2,
-        pulsePhase: Math.random() * Math.PI * 2
+      gsap.to(rightGlowRef.current, {
+        opacity: 0.75,
+        scale: 1.04,
+        duration: 5.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 0.5,
       });
-    }
 
-    for (let k = 0; k < 50; k++) {
-      activePackets.push({
-        lineIndex: Math.floor(Math.random() * gridLines.length),
-        zPos: Math.random() * 2200 + 100,
-        speed: 4 + Math.random() * 8,
-        length: 40 + Math.random() * 80
-      });
-    }
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx.scale(dpr, dpr);
-    };
-    window.addEventListener("resize", handleResize);
-
-    let time = 0;
-    const floorYOffset = height * 0.40; 
-    const cameraHeight = 280; 
-    const fov = 440; 
-
-    const projectFloor = (x: number, z: number) => {
-      const scale = fov / z;
-      return {
-        x: width / 2 + x * scale,
-        y: floorYOffset + cameraHeight * scale,
-        sz: scale,
-        depthAlpha: Math.max(0, 1 - z / 2200)
-      };
-    };
-
-    const render = () => {
-      time += 0.014;
-      ctx.clearRect(0, 0, width, height);
-
-      // 1. Transverse Tracks
-      const numTransverseRows = 24;
-      for (let r = 0; r < numTransverseRows; r++) {
-        const rowZ = (r / numTransverseRows) * 2200 + 10;
-        const leftPt = projectFloor(-1600, rowZ);
-        const rightPt = projectFloor(1600, rowZ);
-        const rowAlpha = Math.pow(leftPt.depthAlpha, 2.0) * 0.12;
-
-        ctx.strokeStyle = `rgba(99, 102, 241, ${rowAlpha})`;
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        ctx.moveTo(leftPt.x, leftPt.y);
-        ctx.lineTo(rightPt.x, rightPt.y);
-        ctx.stroke();
-      }
-
-      // 2. Rails Loops
-      gridLines.forEach((line) => {
-        const p1 = projectFloor(line.xStart, line.zStart);
-        const p2 = projectFloor(line.xEnd, line.zEnd);
-        const targetAlpha = Math.pow(p1.depthAlpha, 1.6) * (line.type === "primary" ? 0.30 : line.type === "accent" ? 0.14 : 0.04);
-
-        if (targetAlpha > 0.005) {
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = line.type === "primary" ? `rgba(56, 189, 248, ${targetAlpha})` : `rgba(99, 102, 241, ${targetAlpha})`;
-          ctx.lineWidth = line.type === "primary" ? 0.7 : 0.4;
-          ctx.stroke();
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",      // When the top of container hits top of view
+          end: "bottom top",    // When the bottom of container leaves top of view
+          scrub: true,          // Syncs exit progress directly with mouse scrolling
         }
-      });
+      })
+      .to(badgeRef.current, { y: -50, opacity: 0, ease: "power2.in" }, 0)
+      .to(headingRef.current, { y: -80, opacity: 0, ease: "power2.in" }, 0.05)
+      .to(descRef.current, { y: -60, opacity: 0, ease: "power2.in" }, 0.1)
+      .to(buttonsRef.current, { y: -40, opacity: 0, ease: "power2.in" }, 0.15)
+      .to(topLinesRef.current, { scaleY: 0, transformOrigin: "top center", opacity: 0, ease: "power1.in" }, 0)
+      .to(bottomLinesRef.current, { scaleY: 0, transformOrigin: "bottom center", opacity: 0, ease: "power1.in" }, 0)
+      .to(sideOutlinesRef.current, { opacity: 0, scale: 0.95, ease: "power1.in" }, 0)
+      .to([leftGlowRef.current, rightGlowRef.current], { opacity: 0, scale: 0.8, ease: "power2.in" }, 0);
 
-      // 3. Signals
-      activePackets.forEach((packet) => {
-        packet.zPos -= packet.speed;
-        if (packet.zPos < 10) {
-          packet.zPos = 2200;
-          packet.lineIndex = Math.floor(Math.random() * gridLines.length);
-        }
-        const targetLine = gridLines[packet.lineIndex];
-        const pHead = projectFloor(targetLine.xStart, packet.zPos);
-        const pTail = projectFloor(targetLine.xStart, packet.zPos + packet.length);
-        const packetAlpha = Math.pow(pHead.depthAlpha, 1.8) * 0.75;
+    }, containerRef);
 
-        if (packetAlpha > 0.02 && pHead.y > floorYOffset) {
-          const grad = ctx.createLinearGradient(pTail.x, pTail.y, pHead.x, pHead.y);
-          grad.addColorStop(0, "rgba(56, 189, 248, 0)");
-          grad.addColorStop(0.8, `rgba(56, 189, 248, ${packetAlpha})`);
-          grad.addColorStop(1, `rgba(255, 255, 255, ${packetAlpha})`);
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = pHead.sz * 2.0 + 0.5;
-          ctx.beginPath();
-          ctx.moveTo(pTail.x, pTail.y);
-          ctx.lineTo(pHead.x, pHead.y);
-          ctx.stroke();
-        }
-      });
-
-      // 4. Ambient Nodes
-      embeddedNodes.forEach((node) => {
-        const pt = projectFloor(node.x, node.z);
-        const pulse = Math.sin(time * 2 + node.pulsePhase) * 0.25 + 0.75;
-        const alpha = Math.pow(pt.depthAlpha, 2) * 0.3 * pulse;
-
-        if (alpha > 0.01 && pt.x >= 0 && pt.x <= width) {
-          ctx.fillStyle = `rgba(165, 180, 252, ${alpha})`;
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, pt.sz * node.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(animationFrameId);
-    };
+    return () => ctx.revert(); // Automatically cleans up triggers & avoids memory leaks
   }, []);
 
-  // --- ITEM-BY-ITEM RAILING CONVEYOR MOVEMENT SYSTEM ---
-  useGSAP(() => {
-    const chars = heroTitleRef.current?.querySelectorAll(".char");
-    if (chars) {
-      gsap.fromTo(chars,
-        { opacity: 0, z: -80, rotateX: 45, filter: "blur(8px)" },
-        { opacity: 1, z: 0, rotateX: 0, filter: "blur(0px)", duration: 1.2, stagger: 0.02, ease: "power4.out" }
-      );
-    }
-
-    const conveyorTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: pinSectionRef.current,
-        start: "top top",
-        end: `+=${(SERVICES.length + 2) * 100}%`, // Dynamically scales layout track distance
-        pin: true,
-        scrub: 0.4,
-      }
-    });
-
-    // 1. Clear Hero Screen Vector
-    conveyorTimeline.to(heroWrapperRef.current, {
-      z: 500,
-      y: "20vh",
-      opacity: 0,
-      scale: 1.3,
-      ease: "power2.in"
-    }, 0);
-
-    // 2. Bring each minimal service item forward one by one down the production rail
-    serviceItemsRef.current.forEach((item, index) => {
-      const positionStart = 0.4 + index * 1.0;
-
-      conveyorTimeline
-        // Emerge cleanly from deep background matrix horizon
-        .fromTo(item,
-          { opacity: 0, z: -1400, y: "-6vh", scale: 0.2 },
-          { opacity: 1, z: 0, y: "0vh", scale: 1, duration: 1.0, ease: "power2.out" },
-          positionStart
-        )
-        // Maintain presentation alignment context for optimal reading visibility
-        .to(item, {
-          z: 180,
-          y: "3vh",
-          duration: 0.6,
-          ease: "none"
-        })
-        // Move rapidly past camera perspective out of focus frame
-        .to(item, {
-          z: 800,
-          y: "18vh",
-          opacity: 0,
-          scale: 1.4,
-          duration: 0.8,
-          ease: "power2.in"
-        });
-    });
-
-    // 3. Reveal System Closing Terminal Gate Vector
-    const finaleStart = 0.4 + SERVICES.length * 1.0;
-    conveyorTimeline.fromTo(finaleWrapperRef.current,
-      { opacity: 0, z: -1000, y: "-8vh", scale: 0.4 },
-      { opacity: 1, z: 0, y: "0vh", scale: 1, ease: "power3.out" },
-      finaleStart
-    );
-
-  }, { scope: containerRef });
-
   return (
-    <div ref={containerRef} className="relative w-full bg-[#020204] text-white overflow-hidden">
-      
-      {/* STATIC DEEP RUNWAY STAGE */}
-      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-        <canvas ref={canvasRef} className="w-full h-full opacity-85 mix-blend-screen" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(2,2,4,0)_0%,rgba(2,2,4,0.5)_50%,rgba(2,2,4,1)_98%)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-[30vh] bg-gradient-to-t from-[#020204] via-[#020204]/30 to-transparent" />
+    <section
+      ref={containerRef}
+      className="relative min-h-screen w-full bg-[#030508] text-white flex flex-col items-center justify-center overflow-hidden px-6 py-32 select-none"
+    >
+      {/* --- BACKGROUND GLOW FIELDS --- */}
+      <div
+        ref={leftGlowRef}
+        className="absolute top-0 left-0 w-137.5 h-137.5 rounded-full bg-linear-to-br from-[#1E40AF] to-transparent opacity-100 blur-[130px] pointer-events-none transform -translate-x-1/4 -translate-y-1/4"
+      />
+
+      <div
+        ref={rightGlowRef}
+        className="absolute bottom-0 right-0 w-162.5 h-162.5 rounded-full bg-linear-to-tl from-[#1D4ED8] to-transparent opacity-90 blur-[150px] pointer-events-none transform translate-x-1/4 translate-y-1/4"
+      />
+
+      {/* --- PROMINENT TECHNICAL OUTLINES --- */}
+      <div ref={sideOutlinesRef} className="absolute inset-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[25%] left-0 w-[18%] h-[35%] border-r border-t border-white/[0.07] rounded-tr-4xl" />
+        <div className="absolute top-[25%] right-0 w-[18%] h-[35%] border-l border-t border-white/[0.07] rounded-tl-4xl" />
       </div>
 
-      {/* FIXED VIEWPORT MATRIX PIN LAYER */}
-      <div ref={pinSectionRef} className="relative w-full h-screen overflow-hidden [perspective:1200px] [perspective-origin:50%_40%]">
-        
-        {/* HERO ENTRY CHANNEL */}
-        <div 
-          ref={heroWrapperRef} 
-          className="absolute inset-0 w-full h-full flex flex-col items-center justify-center px-6 will-change-transform [transform-style:preserve-3d]"
+      {/* --- ACCENT TRACK LINES --- */}
+      <div
+        ref={topLinesRef}
+        className="absolute top-0 left-1/2 -translate-x-1/2 flex gap-5 h-28 opacity-40 z-10"
+      >
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="w-px h-full bg-linear-to-b from-white/80 via-white/40 to-transparent"
+          />
+        ))}
+      </div>
+
+      <div
+        ref={bottomLinesRef}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-5 h-28 opacity-40 z-10"
+      >
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="w-px h-full bg-linear-to-t from-white/80 via-white/40 to-transparent"
+          />
+        ))}
+      </div>
+
+      {/* --- HERO CONTENT ARCHITECTURE --- */}
+      <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center mt-6">
+        <div
+          ref={badgeRef}
+          className="mb-8 opacity-0 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-linear-to-b from-white/8 to-white/2 border border-white/10 backdrop-blur-md shadow-md cursor-pointer hover:border-white/18 transition-all duration-300"
         >
-          <div className="w-full max-w-7xl mx-auto flex flex-col items-center text-center pointer-events-auto">
-            <h1
-              ref={heroTitleRef}
-              className="w-full font-black text-white tracking-tighter leading-none pb-2 [transform-style:preserve-3d]"
-              style={{ fontSize: "clamp(2rem, 5.8vw, 6.2rem)" }}
-            >
-              {words.map((word, wIdx) => (
-                <span key={wIdx} className="inline-block whitespace-nowrap mr-[0.25em] [transform-style:preserve-3d]">
-                  {word.split("").map((char, cIdx) => (
-                    <span key={cIdx} className="char inline-block bg-gradient-to-b from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent will-change-transform">
-                      {char}
-                    </span>
-                  ))}
-                </span>
-              ))}
-            </h1>
-            <p className="text-zinc-500 font-mono text-[10px] md:text-xs max-w-xl mt-6 tracking-[0.3em] uppercase opacity-70">
-              // High-Fidelity Data Topology Execution
-            </p>
-          </div>
+          <span className="text-xs sm:text-[13px] tracking-wide text-gray-300 font-medium">
+            Flexible Plans for You
+          </span>
+          <span className="text-xs text-gray-400">→</span>
         </div>
 
-        {/* RAILWAY DRIVEN CAPABILITIES ELEMENT LAYER */}
-        <CapabilitiesMatrix serviceItemsRef={serviceItemsRef} />
+        <h1
+          ref={headingRef}
+          className="opacity-0 text-[42px] sm:text-[58px] md:text-[72px] font-semibold text-white tracking-tight leading-[1.08] max-w-3xl mb-6"
+        >
+          Deploy your website <br />
+          in seconds, not hours
+        </h1>
 
+        <p
+          ref={descRef}
+          className="opacity-0 text-gray-400 text-base sm:text-lg md:text-[19px] leading-relaxed max-w-2xl mb-12 font-light tracking-wide"
+        >
+          With our state of the art, cutting edge, we are so back kinda hosting
+          services, you can deploy your website in seconds.
+        </p>
+
+        <div
+          ref={buttonsRef}
+          className="opacity-0 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+        >
+          <button className="w-full sm:w-auto px-7 py-3.5 text-[14px] font-medium text-gray-200 rounded-full bg-linear-to-b from-white/10 to-white/3 border border-white/12 hover:from-white/16 hover:to-white/5 hover:border-white/22 active:scale-[0.98] transition-all duration-200 shadow-md backdrop-blur-sm">
+            Start a project
+          </button>
+
+          <button className="w-full sm:w-auto px-8 py-3.5 text-[14px] font-semibold text-[#030508] bg-white rounded-full hover:bg-gray-100 active:scale-[0.98] transition-all duration-200 shadow-[0_4px_24px_rgba(255,255,255,0.18)]">
+            Book a call
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

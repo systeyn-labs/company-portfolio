@@ -1,4 +1,5 @@
 import About from "@/components/landing/About";
+import CapabilitiesJourney from "@/components/landing/CapabilitiesMatrix";
 import Contact from "@/components/landing/Contact";
 import FAQ from "@/components/landing/Faq";
 import Hero from "@/components/landing/Hero";
@@ -13,8 +14,8 @@ export default function Home() {
   return (
     <>
      <Hero />
-        <Services />
-        <Portfolio />
+        <CapabilitiesJourney />
+        {/* <Portfolio /> */}
         <WhyUs />
         <Process />
         <About />
