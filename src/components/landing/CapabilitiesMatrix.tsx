@@ -321,7 +321,7 @@ export default function CapabilitiesJourney() {
         {/* RIGHT COLUMN: Interactive Screen Viewport Matrix / Stacked Responsive List */}
         <div className="lg:col-span-7 relative w-full flex items-center justify-center">
           {/* DESKTOP ENGINE GRID WORKSPACE (1024px and wider displays) */}
-          <div className="hidden lg:flex relative w-full lg:min-h-100 lg:h-105 xl:h-120 rounded-2xl bg-linear-to-br from-white/1.5 to-transparent border border-white/4 backdrop-blur-xl shadow-2xl p-6 xl:p-10 items-center overflow-hidden">
+          <div className="hidden lg:flex relative w-full lg:min-h-100 lg:h-105 xl:h-120 bg-linear-to-br from-white/1.5 to-transparent border border-white/4 backdrop-blur-xl shadow-2xl p-6 xl:p-10 items-center overflow-hidden">
             {/* Architectural Crosshair Corners & Underlying Grid Lattice */}
             <div className="absolute top-3 left-3 w-2 h-2 border-t border-l border-white/20" />
             <div className="absolute top-3 right-3 w-2 h-2 border-t border-r border-white/20" />

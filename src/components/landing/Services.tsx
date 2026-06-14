@@ -141,7 +141,7 @@ export default function Services() {
           </p>
           <a
             href="#contact"
-            className="flex-shrink-0 px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm transition-all duration-200 shadow-blue hover:-translate-y-0.5"
+            className="shrink-0 px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm transition-all duration-200 shadow-blue hover:-translate-y-0.5"
           >
             Let's talk →
           </a>

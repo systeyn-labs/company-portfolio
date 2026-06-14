@@ -13,15 +13,15 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
-     <Hero />
-        <CapabilitiesJourney />
-        {/* <Portfolio /> */}
-        <WhyUs />
-        <Process />
-        <About />
-        <Testimonials />
-        <FAQ />
-        <Contact />
+      <Hero />
+      <CapabilitiesJourney />
+      {/* <Portfolio /> */}
+      <WhyUs />
+      <Process />
+      <About />
+      {/* <Testimonials /> */}
+      <FAQ />
+      <Contact />
     </>
   );
 }

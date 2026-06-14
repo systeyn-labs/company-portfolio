@@ -37,7 +37,7 @@ export default function WhyUs() {
     <section
       id="why-us"
       ref={containerRef}
-      className="relative w-full lg:h-screen bg-[#030508] text-white border-t border-white/2 flex items-center py-12 lg:py-0 overflow-hidden select-none"
+      className="relative w-full lg:h-screen bg-[#080a13] text-white border-t border-white/2 flex items-center py-12 lg:py-0 overflow-hidden select-none"
       aria-label="Why choose Systeyn"
     >
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 w-full">
@@ -45,8 +45,8 @@ export default function WhyUs() {
           {/* --- LEFT SIDE: THE BIG PICTURE STATEMENT --- */}
           <div className="lg:col-span-5 space-y-6 lg:pr-8">
             <div>
-              <span className="text-[9px] tracking-[0.3em] text-blue-500 uppercase font-mono block mb-3">
-                System Safeguards
+              <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-blue-500 uppercase font-bold block mb-3">
+                Why Us
               </span>
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight leading-[1.15] text-white">
                 We've engineered out the reasons software fails.

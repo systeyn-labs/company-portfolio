@@ -1,111 +1,136 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FAQS } from "@/data";
 
-const FAQS = [
-  {
-    q: 'How long does a typical project take?',
-    a: 'Most projects follow a 10–14 week arc from discovery to deployment — but scope determines pace. A focused AI agent or automation workflow can be live in 4–6 weeks. Complex SaaS platforms generally run 12–20 weeks. We share a detailed timeline after the discovery session.',
-  },
-  {
-    q: 'What does the engagement look like from my side?',
-    a: 'You\'ll spend roughly 2–3 hours per week reviewing progress, giving feedback, and approving decisions. We handle the rest. You get a dedicated Slack channel, weekly written updates, and a bi-weekly video sync. No chasing required.',
-  },
-  {
-    q: 'Do you work with early-stage startups or only larger companies?',
-    a: 'Both. Our smallest engagements are founder-led startups building their first product. Our largest are mid-market companies with dedicated engineering teams who need specialized AI or automation expertise. We size our approach to match the stage.',
-  },
-  {
-    q: 'Who owns the code and IP when the project is done?',
-    a: 'You do — entirely. All code, designs, models, and documentation transfer to you at the end of the project. We sign IP assignment agreements before work begins.',
-  },
-  {
-    q: 'Can you integrate with our existing systems and tech stack?',
-    a: 'Yes. Integration work is a core part of what we do. We\'ve connected with major CRMs, ERPs, logistics platforms, payment processors, and custom databases. If there\'s an API, we can work with it.',
-  },
-  {
-    q: 'What happens after the project ships?',
-    a: 'We offer a structured 30-day hypercare period included in every engagement. After that, clients can choose monthly retainer support for ongoing improvements, bug fixes, and monitoring — or hand off to their internal team with full documentation and training.',
-  },
-  {
-    q: 'How do you price projects?',
-    a: 'Most projects are scoped and priced as fixed-fee engagements based on a detailed requirements document. This protects you from runaway costs. Ongoing retainer work is priced monthly. We don\'t charge hourly.',
-  },
-  {
-    q: 'Do you sign NDAs?',
-    a: 'Yes, before any detailed conversation about your business. We\'re happy to sign your NDA or use ours — whichever you\'re more comfortable with.',
-  },
-];
+gsap.registerPlugin(ScrollTrigger);
 
-function FAQItem({ faq, index }: any) {
-  const [open, setOpen] = useState(false);
+function FAQItem({ faq, index, isOpen, toggle }: any) {
+  const id = String(index + 1).padStart(2, "0");
 
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div 
+      className={`group transition-all duration-500 border-b border-white/3 ${
+        isOpen ? "bg-white/2" : "hover:bg-white/1"
+      }`}
+    >
       <button
-        className="w-full flex items-start justify-between gap-4 py-5 text-left group"
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        aria-controls={`faq-answer-${index}`}
-        id={`faq-question-${index}`}
+        onClick={toggle}
+        className="w-full flex items-center justify-between py-7 px-4 sm:px-8 text-left outline-none"
       >
-        <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-sm sm:text-base pr-2">
-          {faq.q}
-        </span>
-        <span
-          className={`flex-shrink-0 w-7 h-7 rounded-full border border-gray-200 bg-gray-50 group-hover:border-blue-200 group-hover:bg-blue-50 flex items-center justify-center transition-all duration-200 ${open ? 'rotate-45 border-blue-200 bg-blue-50' : ''}`}
-          aria-hidden="true"
-        >
-          <svg className={`w-3.5 h-3.5 transition-colors ${open ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </span>
+        <div className="flex items-center gap-6 sm:gap-10">
+          <span className={`font-mono text-[10px] transition-colors duration-300 ${
+            isOpen ? "text-blue-500" : "text-zinc-600"
+          }`}>
+            {id} //
+          </span>
+          <h3 className={`text-sm sm:text-base font-medium tracking-tight transition-colors duration-300 ${
+            isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200"
+          }`}>
+            {faq.q}
+          </h3>
+        </div>
+
+        <div className="relative flex items-center justify-center">
+          {/* Trendy Geometric Toggle */}
+          <div className={`w-5 h-5 border transition-all duration-500 rounded-sm ${
+            isOpen ? "border-blue-500 rotate-90 scale-110" : "border-zinc-800 rotate-0"
+          }`} />
+          <div className={`absolute w-1 h-1 bg-blue-500 rounded-full transition-opacity duration-500 ${
+            isOpen ? "opacity-100" : "opacity-0"
+          }`} />
+        </div>
       </button>
 
-      <div
-        id={`faq-answer-${index}`}
-        role="region"
-        aria-labelledby={`faq-question-${index}`}
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
-      >
-        <p className="pb-5 text-muted text-sm leading-relaxed pr-12">{faq.a}</p>
+      {/* Smooth Grid-based Expansion */}
+      <div className={`grid transition-all duration-500 ease-in-out ${
+        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      }`}>
+        <div className="overflow-hidden">
+          <div className="px-14 sm:px-24 pb-8 flex flex-col gap-4">
+            <p className="text-zinc-500 text-xs sm:text-sm leading-relaxed font-light max-w-2xl">
+              {faq.a}
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[8px] text-blue-500/60 tracking-widest border border-blue-500/20 px-2 py-0.5 rounded">
+                TAG::{faq.tag}
+              </span>
+              <div className="h-px w-8 bg-blue-500/20" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 export default function FAQ() {
-  return (
-    <section id="faq" className="section bg-white" aria-label="Frequently asked questions">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
+  const [openIndex, setOpenIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-          {/* Left — header */}
-          <div className="lg:col-span-2">
-            <p className="label text-blue-500 mb-3">FAQ</p>
-            <h2 className="display-md text-navy mb-5">
-              Questions we hear before every project.
-            </h2>
-            <p className="body-md text-muted mb-8">
-              If your question isn't here, book a free consultation — no sales pitch, just
-              answers.
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".faq-row",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+          },
+        }
+      );
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={containerRef}
+      id="faq"
+      className="w-full min-h-screen bg-[#030508] text-white flex flex-col relative py-12 overflow-hidden select-none border-t border-white/2"
+    >
+      {/* Structural Crosshair Intersections */}
+      <div className="absolute top-0 left-1/4 w-px h-full bg-white/1 hidden lg:block" />
+      <div className="absolute top-1/2 left-0 w-full h-px bg-white/1 hidden lg:block" />
+
+      <div className="w-full px-6 sm:px-12 lg:px-20 relative z-10 flex-1 flex flex-col justify-center">
+        <div className="flex flex-col gap-12 lg:gap-12">
+          
+          {/* --- SIDEBAR HEADER --- */}
+          <div className="space-y-3 text-center">
+            <div className="w-full">
+              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
+                Common Inquiries.
+              </h2>
+            </div>
+            <p className="text-zinc-600 text-xs sm:text-sm font-light leading-relaxed">
+              Transparent definitions for architectural control, timeline management, and system governance.
             </p>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-all duration-200 shadow-blue hover:-translate-y-0.5"
-            >
-              Ask us directly →
-            </a>
           </div>
 
-          {/* Right — accordion */}
-          <div className="lg:col-span-3">
-            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm divide-y-0 px-2">
+          {/* --- TRENDY ACCORDION STACK --- */}
+          <div className="faq-row">
+            <div className="border-t border-white/3 overflow-hidden">
               {FAQS.map((faq, i) => (
-                <FAQItem key={i} faq={faq} index={i} />
+                <FAQItem
+                  key={i}
+                  index={i}
+                  faq={faq}
+                  isOpen={openIndex === i}
+                  toggle={() => setOpenIndex(openIndex === i ? -1 : i)}
+                />
               ))}
             </div>
           </div>
+
         </div>
       </div>
     </section>

@@ -1,138 +1,128 @@
-'use client';
+"use client";
 
-const TESTIMONIALS = [
-  {
-    id: 1,
-    quote:
-      "Systeyn delivered a production-ready AI agent in 6 weeks that replaced a 5-person manual process. The ROI conversation was easy after that.",
-    author: 'Jordan M.',
-    role: 'CTO, Series A SaaS Company',
-    avatar: 'JM',
-    rating: 5,
-    accentColor: 'from-blue-500 to-indigo-600',
-  },
-  {
-    id: 2,
-    quote:
-      "What I valued most was their communication. I always knew where we stood. No excuses, no delays hidden behind jargon — just honest updates and great work.",
-    author: 'Priya S.',
-    role: 'Founder, HR Tech Startup',
-    avatar: 'PS',
-    rating: 5,
-    accentColor: 'from-violet-500 to-purple-600',
-  },
-  {
-    id: 3,
-    quote:
-      "We'd tried two other agencies before Systeyn. The difference was their architecture thinking. They asked questions the others didn't even think to ask.",
-    author: 'Marcus O.',
-    role: 'VP Engineering, E-commerce Platform',
-    avatar: 'MO',
-    rating: 5,
-    accentColor: 'from-emerald-500 to-teal-600',
-  },
-  {
-    id: 4,
-    quote:
-      "They automated 14 manual workflows in our ops team and saved us 120 hours per week. The system hasn't gone down once in 8 months.",
-    author: 'Leila K.',
-    role: 'COO, Manufacturing Group',
-    avatar: 'LK',
-    rating: 5,
-    accentColor: 'from-orange-400 to-rose-500',
-  },
-  {
-    id: 5,
-    quote:
-      "Systeyn took our vague AI idea and turned it into a working product within a quarter. The team felt like an extension of our own engineering org.",
-    author: 'David T.',
-    role: 'CEO, Fintech Startup',
-    avatar: 'DT',
-    rating: 5,
-    accentColor: 'from-blue-600 to-violet-600',
-  },
-  {
-    id: 6,
-    quote:
-      "Their code quality is exceptional. After the project ended, our internal team could maintain and extend everything without issue — that says everything.",
-    author: 'Anya R.',
-    role: 'Head of Product, B2B Platform',
-    avatar: 'AR',
-    rating: 5,
-    accentColor: 'from-indigo-500 to-blue-600',
-  },
-];
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { METRICS } from "@/data";
 
-function StarRating({ count = 5 }) {
+gsap.registerPlugin(ScrollTrigger);
+
+export default function Metrics() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Horizontal geometric line scaling reveal
+      gsap.fromTo(
+        ".metric-border-line",
+        { scaleX: 0, transformOrigin: "left center" },
+        {
+          scaleX: 1,
+          duration: 0.85,
+          ease: "power3.inOut",
+          scrollTrigger: {
+            trigger: ".metric-grid-system",
+            start: "top 80%",
+          },
+        }
+      );
+
+      // 2. Telemetry metrics numerical stagger slide
+      gsap.fromTo(
+        ".metric-node",
+        { opacity: 0, y: 16 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".metric-grid-system",
+            start: "top 75%",
+          },
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="flex gap-0.5" aria-label={`${count} out of 5 stars`}>
-      {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} className="w-4 h-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </div>
-  );
-}
+    <section
+      ref={containerRef}
+      id="metrics"
+      className="w-full bg-[#030508] border-t border-white/[0.02] text-white relative py-24 lg:py-32 overflow-hidden"
+      aria-label="System Performance Matrix"
+    >
+      {/* Structural Coordinate Reference Point */}
+      <div className="absolute top-12 left-12 font-mono text-[7px] text-zinc-800 tracking-widest hidden lg:block">
+        // LOG_SYS_METRICS_DB
+      </div>
 
-function TestimonialCard({ t }: any) {
-  return (
-    <figure className="group flex flex-col gap-5 p-6 rounded-2xl border border-gray-100 bg-white shadow-card hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-      <StarRating count={t.rating} />
-      <blockquote className="flex-1">
-        <p className="text-gray-700 text-sm leading-relaxed">"{t.quote}"</p>
-      </blockquote>
-      <figcaption className="flex items-center gap-3 pt-2 border-t border-gray-100">
-        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.accentColor} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
-          aria-hidden="true">
-          {t.avatar}
-        </div>
-        <div>
-          <p className="font-semibold text-gray-900 text-sm">{t.author}</p>
-          <p className="text-xs text-muted">{t.role}</p>
-        </div>
-      </figcaption>
-    </figure>
-  );
-}
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-end mb-16 lg:mb-20">
+          
+          {/* Header Block */}
+          <div className="lg:col-span-6 space-y-3">
+            <span className="text-[9px] tracking-[0.3em] text-blue-500 uppercase font-mono block">
+              Performance Telemetry // Audit 2026
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
+              Quantifiable system impacts.
+            </h2>
+          </div>
 
-export default function Testimonials() {
-  return (
-    <section id="testimonials" className="section bg-surface" aria-label="Client testimonials">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="label text-blue-500 mb-3">Social Proof</p>
-          <h2 className="display-lg text-navy mb-5">
-            Clients who've seen the difference.
-          </h2>
-          <p className="body-md text-muted">
-            These are placeholder testimonials reflecting the type of outcomes we target.
-            Real client quotes will appear here as the portfolio grows.
-          </p>
+          {/* Analytical Subtext Context */}
+          <div className="lg:col-span-6">
+            <p className="text-zinc-500 text-xs sm:text-sm font-light leading-relaxed max-w-xl">
+              We benchmark production achievements purely on engineering efficiency, system uptime, and core operational cost savings. No vanity data, just verified pipeline telemetry.
+            </p>
+          </div>
         </div>
 
-        {/* Masonry-style grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {TESTIMONIALS.map((t) => (
-            <TestimonialCard key={t.id} t={t} />
-          ))}
+        {/* --- PERFORMANCE GRID MATRIX SYSTEM --- */}
+        <div className="metric-grid-system relative">
+          
+          {/* Animated Horizontal Layout Axis */}
+          <div className="metric-border-line absolute top-0 left-0 w-full h-[1px] bg-white/[0.05]" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8 pt-8">
+            {METRICS.map((item) => (
+              <div key={item.metricId} className="metric-node space-y-4 flex flex-col justify-between">
+                
+                {/* Metric Readout Node */}
+                <div className="space-y-1">
+                  <div className="flex items-baseline justify-between">
+                    <span className="font-mono text-[8px] text-zinc-600 tracking-wider">
+                      [{item.metricId}]
+                    </span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500/20 border border-blue-500/40 block" />
+                  </div>
+                  
+                  <p className="text-4xl sm:text-5xl font-semibold tracking-tight text-white pt-2">
+                    {item.value}
+                  </p>
+                </div>
+
+                {/* Analytical Copy Definitions */}
+                <div className="space-y-2 border-t border-white/[0.02] pt-3">
+                  <h3 className="text-zinc-300 text-xs sm:text-[13px] font-medium leading-snug tracking-tight">
+                    {item.label}
+                  </h3>
+                  <p className="text-zinc-600 text-[10px] font-light leading-relaxed">
+                    {item.context}
+                  </p>
+                </div>
+
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Structural Boundary Axis */}
+          <div className="metric-border-line absolute -bottom-8 left-0 w-full h-[1px] bg-white/[0.03]" />
         </div>
 
-        {/* Social proof footer */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-8 text-center">
-          {[
-            { value: '50+', label: 'Projects completed' },
-            { value: '98%', label: 'Satisfaction rate' },
-            { value: '40+', label: 'Happy clients' },
-          ].map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl font-bold text-navy tracking-tight">{s.value}</p>
-              <p className="text-sm text-muted mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
